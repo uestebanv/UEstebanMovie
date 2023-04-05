@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "GetPopularPelis";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model PL.Models.Movie
+
+<link rel="stylesheet" href="~/css/Movie.css" />
+
+<h1>GetPopularPelis</h1>
+
+<div class="container">
+    <div class="row row-cols-2 row-cols-md-3">
+        @foreach (PL.Models.Movie movie in Model.Movies)
+        {
+            <div class="row">
+                <div class="col-md-4">
+                    <figure class="image-block">
+                        <h1>@movie.Title</h1>
+                        <img src=@movie.Image />
+                        <figcaption>
+                            <h3>@movie.Title</h3>
+                            <p>@movie.Description</p>
+                            @Html.ActionLink("Favorito","AñadirFavoritas","Movie" ,new { IdMovie = movie.IdMovie }, htmlAttributes: new { @class = "btn btn-success"})
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>
+            <br />
+        }
+    </div>
+</div>
