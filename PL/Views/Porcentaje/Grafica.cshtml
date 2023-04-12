@@ -1,0 +1,106 @@
+﻿@model ML.Cine
+@{
+    ViewData["Title"] = "Grafica";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Grafica</h1>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+        </div>
+        <div class="col">
+            <div id="map"></div>
+            <style>
+                #map {
+                    height: 400px; /* The height is 400 pixels */
+                    width: 100%; /* The width is the width of the web page */
+                }
+            </style>
+        </div>
+
+    </div>
+</div>
+
+
+
+@section Scripts {
+
+    <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCSKBDdPPlfca_zTwyxKiicRQn1qfgRjLw&callback=initMap"></script>
+
+    <script>
+        window.onload = function () {
+
+            var options = {
+                title: {
+                    text: "Ventas por zona"
+                },
+                subtitles: [{
+                    text: ""
+                }],
+                //animationEnabled: true,
+                data: [{
+                    type: "pie",
+                    startAngle: 40,
+                    toolTipContent: "<b>{label}</b>: {y}%",
+                    showInLegend: "true",
+                    legendText: "{label}",
+                    indexLabelFontSize: 16,
+                    indexLabel: "{label} - {y}%",
+                    dataPoints: [
+                        { y: @Model.Zona.PCentro, label: "Centro" },
+                        { y: @Model.Zona.PNorte, label: "Norte" },
+                        { y: @Model.Zona.POriente, label: "Oriente" },
+                        { y: @Model.Zona.PPoniente, label: "Poniente" },
+                        { y: @Model.Zona.PSur, label: "Sur" },
+                    ]
+                }]
+            };
+            $("#chartContainer").CanvasJSChart(options);
+        }
+
+
+        function initMap() {
+            // The location of Uluru
+            const uluru = { lat: 19.42699, lng: -99.16769 };
+            // The map, centered at Uluru
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 14,
+                center: uluru,
+            });
+
+
+        @foreach (ML.Cine cine in Model.Cines)
+        {
+            <text>
+                        var contentString =
+                    '<div id="content">' +
+                    '<div id="siteNotice">' +
+                    '</div>' +
+                    'Descripción: ' + '@cine.Direccion' +
+                    '<div id="bodyContent">' +
+                    'Ventas:' + '@cine.Venta' + "<br>" +
+                    'Zona:' + '@cine.Zona.Descripcion' + "<br>" +
+                    'ID:' + '@cine.IdCine' + "<br>" +
+                    '</div>' +
+                    '</div>';
+                var marker_@cine.IdCine = new google.maps.Marker({ position: { lat: @cine.Latitud, lng: @cine.Longitud }, map: map });
+                (marker_@cine.IdCine).addListener("click", function () {
+                    (infoWindow_@cine.IdCine).open(map, marker_@cine.IdCine);
+            });
+            var infoWindow_@cine.IdCine = new google.maps.InfoWindow({
+                content: contentString,
+                ariaLabel: "Punto de Venta",
+            });
+            </text>
+        }
+        }
+
+
+    </script>
+    }
+

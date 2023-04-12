@@ -1,0 +1,54 @@
+﻿@model ML.Cine
+@{
+    ViewData["Title"] = "GetAll";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Cines</h1>
+<hr />
+ <div class="row">
+        <div style="float:right">
+            @Html.ActionLink("Nuevo Registro","From","Cine", htmlAttributes: new {@class = "btn btn-success", @style="float:right"})
+        </div>
+    </div>
+
+<hr />
+<div class="row">
+    @if (Model.Cines != null)
+    {
+        <table class="table table-dark table-striped" id="tblCine">
+            <thead>
+                <tr>
+                    <td class="text-center " style="font-weight:bold;">Editar</td>
+                    <td class="visually-hidden">IdUsuario</td>
+                    <td class="text-center" style="font-weight:bold;">Latitud</td>
+                    <td class="text-center" style="font-weight:bold;">Longitud</td>
+                    <td class="text-center" style="font-weight:bold;">Direccion</td>
+                    <td class="text-center" style="font-weight:bold;">Ventas</td>
+                    <td class="text-center" style="font-weight:bold;">Zona</td>
+                    <td class="text-center" style="font-weight:bold;">Eliminar</td>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ML.Cine cine in Model.Cines)
+                {
+                    <tr>
+                        <td class="text-center"><a class="btn btn-warning " href="@Url.Action("From","Cine",new { IdCine = cine.IdCine })"></a>
+
+                        <td class="visually-hidden">@cine.Cines</td>
+                        <td>@cine.Latitud</td>
+                        <td class="text-center">@cine.Longitud</td>
+                        <td>@cine.Direccion</td>
+                        <td>@cine.Venta</td>
+                        <td>@cine.Zona.Descripcion</td>
+                        <td class="text-center"><a class="btn btn-danger" href="@Url.Action("Delete","Cine",new { IdCine = cine.IdCine })" onclick="return confirm('Estas seguro de Eliminar el registro?');"></a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-danger" role="alert">Ocurrio un error al consultar los registro</div>
+    }
+</div>

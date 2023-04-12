@@ -1,0 +1,134 @@
+﻿@model ML.Cine
+@{
+    ViewData["Title"] = "From";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Ubicacion del Cine</h2>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+
+        @using (Html.BeginForm("From", "Cine", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <div class="container">
+                <div class="row">
+                    <div class="col col-md-3">
+                        @Html.LabelFor(model => Model.IdCine, new { @class = "visually-hidden" })
+                        @Html.TextBoxFor(model => model.IdCine, new { @class = "visually-hidden form-control" })
+                        @Html.ValidationMessageFor(model => model.IdCine)
+
+                        @Html.LabelFor(model => model.Latitud)
+                        @Html.TextBoxFor(model => model.Latitud, new { @class = "form-control", @id = "txtLatitud",@readonly = true})
+                        @Html.ValidationMessageFor(model => model.Latitud, null, new{ @class = "text-danger"})
+
+                        @Html.LabelFor(model => model.Longitud)
+                        @Html.TextBoxFor(model => model.Longitud, new { @class = "form-control", @id = "txtLongitud", @readonly = true })
+                        @Html.ValidationMessageFor(model => model.Longitud, null, new{ @class = "text-danger"})
+
+                        @Html.LabelFor(model => model.Direccion)
+                        @Html.TextBoxFor(model => model.Direccion, new { @class = "form-control", @id = "txtDireccion", @readonly = true })
+                        @Html.ValidationMessageFor(model => model.Direccion, null, new{ @class = "text-danger"})
+
+                        @Html.LabelFor(model => model.Venta)
+                        @Html.TextBoxFor(model => model.Venta, new { @class = "form-control", @id = "txtApellidoMaterno", @onkeypress="SoloLetras(event,'lblNombre','txtApellidoMaterno)" })
+                        @Html.ValidationMessageFor(model => model.Venta)
+
+                        @Html.LabelFor(model => model.Zona)
+                        @Html.DropDownListFor(model =>model.Zona.IdZona, new SelectList(Model.Zona.Zonas,"IdZona","Descripcion"), "Seleccione una Zona", new {@class = "form-control", @id ="ddlRol" })
+
+                        <hr />
+                        <div class="center-block ">
+                            <input type="submit" value="Guardar" class="btn btn-success" />
+                            @Html.ActionLink("Regresar", "GetAll", "Usuario", htmlAttributes: new { @class = "btn btn-danger" })
+                        </div>
+
+                    </div>
+                    <div class="col">
+                        <div id="map"></div>
+                        <style>
+                            #map {
+                                height: 400px; /* The height is 400 pixels */
+                                width: 100%; /* The width is the width of the web page */
+                            }
+                        </style>
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+
+
+<script>
+    function initMap() {
+
+        if ($("#txtLatitud").val() == 0 && $("#txtLongitud").val() == 0) {
+            uluru = { lat: 19.42699, lng: -99.16769 };
+        }
+        else {
+            uluru = { lat: parseFloat($("#txtLatitud").val()), lng: parseFloat($("#txtLongitud").val()) };
+        }
+
+        // The location of Uluru
+        //const uluru = {  };
+        // The map, centered at Uluru
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 14,
+            center: uluru,
+        });
+
+
+        // Create the initial InfoWindow.
+        let infoWindow = new google.maps.InfoWindow({
+            content: "Seleccione una Ubicacion!",
+            position: uluru,
+        });
+
+        infoWindow.open(map);
+        // Configure the click listener.
+        map.addListener("click", (mapsMouseEvent) => {
+            // Close the current InfoWindow.
+            infoWindow.close();
+            // Create a new InfoWindow.
+            infoWindow = new google.maps.InfoWindow({
+                position: mapsMouseEvent.latLng,
+
+            });
+            infoWindow.setContent(
+                JSON.stringify(mapsMouseEvent.latLng.toJSON(), null, 2)
+            );
+            infoWindow.open(map);
+            var lat = mapsMouseEvent.latLng.lat();
+            var lng = mapsMouseEvent.latLng.lng();
+            $('#txtLatitud').val(lat);
+            $('#txtLongitud').val(lng);
+        });
+
+
+        google.maps.event.addListener(map, 'click', function (event) {
+            var geocoder = new google.maps.Geocoder();
+
+            geocoder.geocode({
+                'latLng': event.latLng
+            }, function (results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    if (results[0]) {
+                        $("#txtDireccion").val(results[0].formatted_address);
+                    }
+                }
+
+            });
+        });
+    }
+
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCSKBDdPPlfca_zTwyxKiicRQn1qfgRjLw&callback=initMap"></script>
+
+
